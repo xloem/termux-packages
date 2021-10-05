@@ -56,8 +56,6 @@ PACKAGES+=" xmlto"
 PACKAGES+=" xmltoman"
 
 # Needed by python modules (e.g. asciinema) and some build systems.
-PACKAGES+=" python3.7"
-PACKAGES+=" python3.8"
 PACKAGES+=" python3.9"
 PACKAGES+=" python3.10-full"
 PACKAGES+=" python3-pip"
@@ -110,7 +108,7 @@ PACKAGES+=" composer"
 
 # Needed by package rust.
 PACKAGES+=" libssl-dev" # Needed to build Rust
-PACKAGES+=" clang-10"
+PACKAGES+=" clang-12"
 
 # Needed for package smalltalk.
 PACKAGES+=" libsigsegv-dev"
@@ -134,8 +132,8 @@ PACKAGES+=" luajit"
 # Needed by gitea.
 PACKAGES+=" npm"
 
-# Needed by libduktape (2.5.0 still uses python2 unfortunately)
-PACKAGES+=" python-yaml"
+# Needed by libduktape
+PACKAGES+=" bc"
 
 # Java.
 PACKAGES+=" openjdk-8-jdk openjdk-16-jdk"
@@ -163,8 +161,8 @@ PACKAGES+=" libjansson-dev"
 PACKAGES+=" libparse-yapp-perl"
 PACKAGES+=" libreadline-dev"
 PACKAGES+=" libunistring-dev"
-PACKAGES+=" llvm-10-dev"
-PACKAGES+=" llvm-10-tools"
+PACKAGES+=" llvm-12-dev"
+PACKAGES+=" llvm-12-tools"
 
 # Needed by packages in X11 repository.
 PACKAGES+=" alex"
