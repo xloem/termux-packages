@@ -65,7 +65,7 @@ termux_step_host_build() {
 
 	cmake -G Ninja -DLLVM_ENABLE_PROJECTS='clang;flang;lldb;mlir' $TERMUX_PKG_SRCDIR/llvm
 	ninja -j $TERMUX_MAKE_PROCESSES clang-tblgen lldb-tblgen llvm-tblgen \
-				        mlir-tblgen mlir-linalg-ods-gen f18
+				        mlir-tblgen mlir-linalg-ods-gen
 }
 
 termux_step_pre_configure() {
