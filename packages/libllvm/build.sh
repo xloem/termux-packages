@@ -91,6 +91,13 @@ termux_step_pre_configure() {
 	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -DLLVM_HOST_TRIPLE=$LLVM_DEFAULT_TARGET_TRIPLE"
 	export TERMUX_SRCDIR_SAVE=$TERMUX_PKG_SRCDIR
 	TERMUX_PKG_SRCDIR=$TERMUX_PKG_SRCDIR/llvm
+	# flang doesn't seem to be fully cross-compilation friendly.
+	# Fix so that it uses mlir-tblgen for host instead of for
+	# termux arch
+	echo "Applying flang-mlir-tblgen-path.diff"
+	sed "s%@TERMUX_HOSTBUILD_DIR@%$TERMUX_PKG_HOSTBUILD_DIR%g" \
+		$TERMUX_PKG_BUILDER_DIR/flang-mlir-tblgen-path.diff \
+		 | patch --silent -p1
 }
 
 termux_step_post_configure() {
