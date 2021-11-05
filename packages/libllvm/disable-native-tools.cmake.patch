@@ -44,3 +44,45 @@
    if ((${project} STREQUAL LLVM OR ${project} STREQUAL MLIR) AND NOT LLVM_INSTALL_TOOLCHAIN_ONLY AND LLVM_BUILD_UTILS)
      set(export_to_llvmexports)
      if(${target} IN_LIST LLVM_DISTRIBUTION_COMPONENTS OR
+--- ../mlir-CMakeLists.txt	2021-11-05 14:08:38.652987268 +0000
++++ ./mlir/tools/mlir-linalg-ods-gen/CMakeLists.txt	2021-11-05 18:40:08.384180048 +0000
+@@ -24,21 +24,6 @@
+ set(MLIR_LINALG_ODS_GEN_EXE ${MLIR_LINALG_ODS_GEN} PARENT_SCOPE)
+ set(MLIR_LINALG_ODS_GEN_TARGET mlir-linalg-ods-gen PARENT_SCOPE)
+ 
+-if(LLVM_USE_HOST_TOOLS)
+-  if (${MLIR_LINALG_ODS_GEN} STREQUAL "mlir-linalg-ods-gen")
+-    build_native_tool(mlir-linalg-ods-gen MLIR_LINALG_ODS_GEN_EXE DEPENDS mlir-linalg-ods-gen)
+-    set(MLIR_LINALG_ODS_GEN_EXE ${MLIR_LINALG_ODS_GEN_EXE} PARENT_SCOPE)
+-
+-    add_custom_target(mlir-linalg-ods-gen-host DEPENDS ${MLIR_LINALG_ODS_GEN_EXE})
+-    set(MLIR_LINALG_ODS_GEN_TARGET mlir-linalg-ods-gen-host DEPENDS PARENT_SCOPE)
+-
+-    if(NOT LLVM_BUILD_UTILS)
+-      set_target_properties(mlir-linalg-ods-gen PROPERTIES EXCLUDE_FROM_ALL ON)
+-    endif()
+-  endif()
+-endif()
+-
+-
+ # New mlir-linalg-ods-yaml-gen.
+ add_llvm_tool(mlir-linalg-ods-yaml-gen
+   mlir-linalg-ods-yaml-gen.cpp
+@@ -55,17 +40,3 @@
+ 
+ set(MLIR_LINALG_ODS_YAML_GEN_EXE ${MLIR_LINALG_ODS_YAML_GEN} PARENT_SCOPE)
+ set(MLIR_LINALG_ODS_YAML_GEN_TARGET mlir-linalg-ods-yaml-gen PARENT_SCOPE)
+-
+-if(LLVM_USE_HOST_TOOLS)
+-  if (${MLIR_LINALG_ODS_YAML_GEN} STREQUAL "mlir-linalg-ods-yaml-gen")
+-    build_native_tool(mlir-linalg-ods-yaml-gen MLIR_LINALG_ODS_YAML_GEN_EXE DEPENDS mlir-linalg-ods-yaml-gen)
+-    set(MLIR_LINALG_ODS_YAML_GEN_EXE ${MLIR_LINALG_ODS_YAML_GEN_EXE} PARENT_SCOPE)
+-
+-    add_custom_target(mlir-linalg-ods-yaml-gen-host DEPENDS ${MLIR_LINALG_ODS_YAML_GEN_EXE})
+-    set(MLIR_LINALG_ODS_YAML_GEN_TARGET mlir-linalg-ods-yaml-gen-host DEPENDS PARENT_SCOPE)
+-
+-    if(NOT LLVM_BUILD_UTILS)
+-      set_target_properties(mlir-linalg-ods-yaml-gen PROPERTIES EXCLUDE_FROM_ALL ON)
+-    endif()
+-  endif()
+-endif()
