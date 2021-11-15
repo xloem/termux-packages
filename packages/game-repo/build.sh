@@ -8,8 +8,9 @@ TERMUX_PKG_SKIP_SRC_EXTRACT=true
 TERMUX_PKG_PLATFORM_INDEPENDENT=true
 
 termux_step_make_install() {
-	mkdir -p $TERMUX_PREFIX/etc/apt/sources.list.d
-	echo "deb https://packages.termux.org/apt/termux-games games stable" > $TERMUX_PREFIX/etc/apt/sources.list.d/game.list
+	mkdir -p $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/etc/apt/sources.list.d
+	echo "deb https://packages.termux.org/apt/termux-games games stable" \
+		> $TERMUX_PKG_MASSAGEDIR/$TERMUX_PREFIX/etc/apt/sources.list.d/game.list
 }
 
 termux_step_create_debscripts() {
