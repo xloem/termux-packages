@@ -1,0 +1,139 @@
+--- ../Makefile.orig	2021-11-17 21:06:56.106437332 +0000
++++ ./Makefile	2021-11-17 21:11:04.509701245 +0000
+@@ -104,7 +104,7 @@
+ #
+ #	PREFIX= /usr/local
+ #
+-PREFIX= /usr/local
++PREFIX ?= /usr/local
+ #PREFIX= /usr
+ #PREFIX= /usr/global
+ 
+@@ -692,8 +692,8 @@
+ #endif	/* end of skip for non-Gnu makefiles */
+ 
+ # default INCDIR for non-macOS
+-INCDIR= /usr/include
+-#INCDIR= ${PREFIX}/include
++#INCDIR= /usr/include
++INCDIR= ${PREFIX}/include
+ #INCDIR= /dev/env/DJDIR/include
+ 
+ #if 0	/* start of skip for non-Gnu makefiles */
+@@ -755,8 +755,8 @@
+ #endif	/* end of skip for non-Gnu makefiles */
+ 
+ # default BINDIR for non-macOS
+-BINDIR= /usr/bin
+-#BINDIR= ${PREFIX}/bin
++#BINDIR= /usr/bin
++BINDIR= ${PREFIX}/bin
+ #BINDIR= /dev/env/DJDIR/bin
+ 
+ #if 0	/* start of skip for non-Gnu makefiles */
+@@ -771,8 +771,8 @@
+ #endif	/* end of skip for non-Gnu makefiles */
+ 
+ # default LIBDIR for non-macOS
+-LIBDIR= /usr/lib
+-#LIBDIR= ${PREFIX}/lib
++#LIBDIR= /usr/lib
++LIBDIR= ${PREFIX}/lib
+ #LIBDIR= /dev/env/DJDIR/lib
+ 
+ #if 0	/* start of skip for non-Gnu makefiles */
+@@ -787,8 +787,8 @@
+ #endif	/* end of skip for non-Gnu makefiles */
+ 
+ # default CALC_SHAREDIR for non-macOS
+-CALC_SHAREDIR= /usr/share/calc
+-#CALC_SHAREDIR= ${PREFIX}/lib/calc
++#CALC_SHAREDIR= /usr/share/calc
++CALC_SHAREDIR= ${PREFIX}/lib/calc
+ #CALC_SHAREDIR= /dev/env/DJDIR/share/calc
+ 
+ #if 0	/* start of skip for non-Gnu makefiles */
+@@ -870,7 +870,7 @@
+ #
+ # If in doubt, use T=
+ #
+-T=
++T=${DESTDIR}
+ 
+ # where man section 1 pages are installed
+ #
+@@ -892,7 +892,7 @@
+ MANDIR= ${PREFIX}/share/man/man1
+ else
+ #endif	/* end of skip for non-Gnu makefiles */
+-MANDIR= /usr/share/man/man1
++MANDIR= ${PREFIX}/share/man/man1
+ #if 0	/* start of skip for non-Gnu makefiles */
+ endif
+ #endif	/* end of skip for non-Gnu makefiles */
+@@ -1033,11 +1033,11 @@
+ #
+ # If in doubt, set USE_READLINE, READLINE_LIB and READLINE_INCLUDE to nothing.
+ #
+-USE_READLINE=
+-#USE_READLINE= -DUSE_READLINE
++#USE_READLINE=
++USE_READLINE= -DUSE_READLINE
+ #
+-READLINE_LIB=
+-READLINE_EXTRAS=
++#READLINE_LIB=
++#READLINE_EXTRAS=
+ #
+ #READLINE_LIB= -lreadline
+ #READLINE_EXTRAS= -lhistory -lncurses
+@@ -1045,8 +1045,8 @@
+ #READLINE_LIB= -L/usr/gnu/lib -lreadline
+ #READLINE_EXTRAS= -lhistory -lncurses
+ #
+-#READLINE_LIB= -L${PREFIX}/lib -lreadline
+-#READLINE_EXTRAS= -lhistory -lncurses
++READLINE_LIB= -L${PREFIX}/lib -lreadline
++READLINE_EXTRAS= -lhistory -lncurses
+ #
+ # For Apple OS X: install fink from http://fink.sourceforge.net
+ #		  and then do a 'fink install readline' and then use:
+@@ -1063,9 +1063,9 @@
+ #READLINE_LIB= -L${PREFIX}/opt/readline/lib -lreadline
+ #READLINE_EXTRAS= -lhistory -lncurses
+ #
+-READLINE_INCLUDE=
++#READLINE_INCLUDE=
+ #READLINE_INCLUDE= -I/usr/gnu/include
+-#READLINE_INCLUDE= -I${PREFIX}/include
++READLINE_INCLUDE= -I${PREFIX}/include
+ 
+ # If $PAGER is not set, use this program to display a help file
+ #
+@@ -1109,7 +1109,7 @@
+ # a *.a link library.  Set RANLIB to the utility that performs this
+ # action.  Set RANLIB to : if your system does not need such a utility.
+ #
+-RANLIB=ranlib
++RANLIB?=ranlib
+ #RANLIB=:
+ 
+ # Normally certain files depend on the Makefile.  If the Makefile is
+@@ -1207,7 +1207,7 @@
+ 
+ # standard utilities used during make
+ #
+-AR= ar
++AR?= ar
+ AWK= awk
+ CAT= cat
+ CHMOD= chmod
+@@ -1423,7 +1423,7 @@
+ CCMISC=
+ #
+ LCC= gcc
+-CC= ${PURIFY} ${LCC} ${CCWERR}
++CC?= ${PURIFY} ${LCC} ${CCWERR}
+ #
+ endif
+ 
