@@ -1,0 +1,11 @@
+--- ../install.cmake.orig	2021-11-17 17:55:36.937837349 +0000
++++ ./cmake/install.cmake	2021-11-17 18:03:32.059593430 +0000
+@@ -142,7 +142,7 @@
+   NAMESPACE protobuf::
+   COMPONENT protobuf-export)
+ 
+-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_CMAKEDIR}/
++install(DIRECTORY ${CMAKE_INSTALL_CMAKEDIR}/
+   DESTINATION "${CMAKE_INSTALL_CMAKEDIR}"
+   COMPONENT protobuf-export
+   PATTERN protobuf-targets.cmake EXCLUDE
