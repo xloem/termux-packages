@@ -64,7 +64,7 @@ termux_step_host_build() {
 
 termux_step_pre_configure() {
 	# install python libs
-	hon${_PYTHON_MAJOR_VERSION} -m pip install --upgrade numpy pyyaml typing_extensions
+	python${_PYTHON_MAJOR_VERSION} -m pip install --upgrade numpy pyyaml typing_extensions
 
 	# ensure vulkan wrappers are present
 	local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
