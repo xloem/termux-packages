@@ -64,8 +64,18 @@ termux_step_host_build() {
 }
 
 termux_step_pre_configure() {
-	# install python libs
-	python${_PYTHON_MAJOR_VERSION} -m pip install --upgrade numpy pyyaml typing_extensions
+	# install host python libs
+	python${_PYTHON_MAJOR_VERSION} -m pip install dataclasses typing_extensions
+
+	# install target numpy if available
+	# numpy binary packages appear to be only available for 64 bit archs
+	# it might work to put a host numpy here and rely on the device loader to load the real thing; untested
+	if python${_PYTHON_MAJOR_VERSION} -m pip install --platform manylinux2014_${TERMUX_ARCH} --only-binary=:all: --target="$PREFIX/lib/python${_PYTHON_MAJOR_VERSION}/site-packages" numpy; then
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS="$TERMUX_PKG_EXTRA_CONFIGURE_ARGS
+		-DNUMPY_INCLUDE_DIR=$PREFIX/lib/python${_PYTHON_MAJOR_VERSION}/site-packages/numpy/core/include
+		-DUSE_NUMPY=ON
+		"
+	fi
 
 	# ensure vulkan wrappers are present
 	local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
