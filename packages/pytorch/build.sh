@@ -19,8 +19,8 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DUSE_LMDB=ON
 -DUSE_FFTW=ON
 -DUSE_OPENMP=ON
--DPROTOBUF_PROTOC_EXECUTABLE=$TERMUX_PKG_SRCDIR/build_host_protoc/bin/protoc
--DCAFFE2_CUSTOM_PROTOC_EXECUTABLE=$TERMUX_PKG_SRCDIR/build_host_protoc/bin/protoc
+-DPROTOBUF_PROTOC_EXECUTABLE=$TERMUX_PKG_HOSTBUILD_DIR/build_host_protoc/bin/protoc
+-DCAFFE2_CUSTOM_PROTOC_EXECUTABLE=$TERMUX_PKG_HOSTBUILD_DIR/build_host_protoc/bin/protoc
 -DANDROID_NDK=$NDK
 -DANDROID_NDK_HOST_SYSTEM_NAME=linux-$HOSTTYPE
 -DNATIVE_BUILD_DIR=$TERMUX_PKG_HOSTBUILD_DIR/sleef
@@ -32,10 +32,14 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DPYTHON_LIB_REL_PATH=lib/python${_PYTHON_MAJOR_VERSION}/site-packages
 "
 
-termux_step_post_get_source() {
-	# replace pytorch's protobuf release with termux's so all host and device versions align
-	local PYTORCH_SRCDIR="$TERMUX_PKG_SRCDIR"
+termux_step_host_build() {
+	# use the protoc build script from pytorch to build the protoc from termux so the header versions align
+	local PYTORCH_HOSTBUILD_DIR="$TERMUX_PKG_HOSTBUILD_DIR"
 	(
+		# link to pytorch script
+		mkdir scripts
+		ln -s "$TERMUX_PKG_SRCDIR"/scripts/build_host_protoc.sh scripts/
+
 		# change termux pkg variables to libprotobuf, and extract it
 		TERMUX_PKG_BUILDER_SCRIPT="$TERMUX_SCRIPTDIR"/packages/libprotobuf/build.sh
 		termux_step_setup_variables
@@ -43,16 +47,14 @@ termux_step_post_get_source() {
 		cd "$TERMUX_PKG_CACHEDIR"
 		termux_step_get_source
 
-		# replace pytorch protobuf with a symlink to termux libprotobuf
-		cd "$PYTORCH_SRCDIR"
-		rm -rf third_party/protobuf
+		# link to libprotobuf
+		cd "$PYTORCH_HOSTBUILD_DIR"
+		mkdir third_party
 		ln -s "$TERMUX_PKG_SRCDIR" third_party/protobuf
-	)
-}
 
-termux_step_host_build() {
-	# protobuf compiler
-	"$TERMUX_PKG_SRCDIR"/scripts/build_host_protoc.sh
+		# build
+		scripts/build_host_protoc.sh
+	)
 
 	# sleef uses an entire host build: https://github.com/shibatch/sleef/issues/249
 	mkdir -p sleef
