@@ -2,10 +2,10 @@ TERMUX_PKG_HOMEPAGE=https://clang.llvm.org/
 TERMUX_PKG_DESCRIPTION="Modular compiler and toolchain technologies library"
 TERMUX_PKG_LICENSE="NCSA"
 TERMUX_PKG_MAINTAINER="@buttaface"
-TERMUX_PKG_VERSION=13.0.0
+TERMUX_PKG_VERSION=13.0.1-rc1
 TERMUX_PKG_REVISION=3
-TERMUX_PKG_SHA256=6075ad30f1ac0e15f07c1bf062c1e1268c241d674f11bd32cdf0e040c71f2bf3
-TERMUX_PKG_SRCURL=https://github.com/llvm/llvm-project/releases/download/llvmorg-$TERMUX_PKG_VERSION/llvm-project-$TERMUX_PKG_VERSION.src.tar.xz
+TERMUX_PKG_SHA256=6ea2fe82fb70ee9696da833664470b604d28714aa29af27505e6abcdaa33f31e
+TERMUX_PKG_SRCURL=https://github.com/llvm/llvm-project/releases/download/llvmorg-$TERMUX_PKG_VERSION/llvm-project-${TERMUX_PKG_VERSION/-/}.src.tar.xz
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_RM_AFTER_INSTALL="
 bin/ld64.lld.darwin*
