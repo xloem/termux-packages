@@ -82,7 +82,7 @@ termux_step_pre_configure() {
 		"
 	fi
 
-	if $TERMUX_ON_DEVICE_BUILD
+	if ! $TERMUX_ON_DEVICE_BUILD
 	then
 		# ensure vulkan wrappers are present
 		local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
