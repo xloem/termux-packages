@@ -9,7 +9,6 @@ TERMUX_PKG_SHA256=ae0e462d5e4eab79c5b52d4318c03522ebe94adfefee10a5c80b92c04aaae6
 # note: these dependencies are all optional
 TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,opencv,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
 _PYTHON_MAJOR_VERSION="$(. $TERMUX_SCRIPTDIR/packages/python/build.sh; echo ${TERMUX_PKG_VERSION%.*})" # 3.10 at time of writing
-TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DBUILD_TEST=OFF
 -DBUILD_CUSTOM_PROTOBUF=OFF
@@ -30,6 +29,12 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DPYTHONLIBS_FOUND=ON
 -DPYTHONLIBS_VERSION_STRING=${_PYTHON_MAJOR_VERSION}
 "
+if $TERMUX_ON_DEVICE_BUILD
+then
+	TERMUX_PKG_EXTRA_CONFIGURE_ARGS="$TERMUX_PKG_EXTRA_CONFIGURE_ARGS -DUSE_VULKAN=OFF"
+else
+	TERMUX_PKG_HOSTBUILD=true
+fi
 
 termux_step_host_build() {
 	# use the protoc build script from pytorch to build the protoc from termux so the header versions align
@@ -66,8 +71,11 @@ termux_step_pre_configure() {
 	# install python libs
 	python${_PYTHON_MAJOR_VERSION} -m pip install --upgrade numpy pyyaml typing_extensions
 
-	# ensure vulkan wrappers are present
-	local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
-	mkdir -p "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
-	cp -v "$TERMUX_PKG_BUILDER_DIR"/vulkan_wrapper* "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
+	if $TERMUX_ON_DEVICE_BUILD
+	then
+		# ensure vulkan wrappers are present
+		local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
+		mkdir -p "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
+		cp -v "$TERMUX_PKG_BUILDER_DIR"/vulkan_wrapper* "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
+	fi
 }
