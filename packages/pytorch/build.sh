@@ -71,7 +71,7 @@ termux_step_pre_configure() {
 	# install python libs
 	python${_PYTHON_MAJOR_VERSION} -m pip install --upgrade numpy pyyaml typing_extensions
 
-	if $TERMUX_ON_DEVICE_BUILD
+	if ! $TERMUX_ON_DEVICE_BUILD
 	then
 		# ensure vulkan wrappers are present
 		local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
