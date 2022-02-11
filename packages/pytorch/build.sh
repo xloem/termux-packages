@@ -3,9 +3,9 @@ TERMUX_PKG_DESCRIPTION='Tensors and Dynamic neural networks'
 TERMUX_PKG_LICENSE=non-free
 TERMUX_PKG_LICENSE_FILE=LICENSE
 TERMUX_PKG_MAINTAINER='@termux'
-TERMUX_PKG_VERSION=1.10.1
+TERMUX_PKG_VERSION=1.10.2
 TERMUX_PKG_SRCURL=https://github.com/pytorch/pytorch/releases/download/v${TERMUX_PKG_VERSION}/pytorch-v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=635ce1ae2af286d0f401cb0342bcf0a337f774c3f91f3dfcb11013fff61c3c73
+TERMUX_PKG_SHA256=ae0e462d5e4eab79c5b52d4318c03522ebe94adfefee10a5c80b92c04aaae60b
 # note: these dependencies are all optional
 TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,opencv,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
 _PYTHON_MAJOR_VERSION="$(. $TERMUX_SCRIPTDIR/packages/python/build.sh; echo ${TERMUX_PKG_VERSION%.*})" # 3.10 at time of writing
