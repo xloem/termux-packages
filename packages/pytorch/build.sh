@@ -58,7 +58,7 @@ termux_step_host_build() {
 	# sleef uses an entire host build: https://github.com/shibatch/sleef/issues/249
 	mkdir -p sleef
 	cd sleef
-	cmake -G Ninja "$TERMUX_PKG_SRCDIR"/third_party/sleef
+	cmake -G Ninja -DCMAKE_C_STANDARD_LIBRARIES=-lm "$TERMUX_PKG_SRCDIR"/third_party/sleef
 	ninja all
 }
 
