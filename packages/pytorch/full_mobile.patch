@@ -1,16 +1,51 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0c11507838..8dc2391f00 100644
+index 0c11507838..8aa6822bbb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -528,7 +528,7 @@ endif(NOT MSVC)
+@@ -527,15 +527,15 @@ endif(NOT MSVC)
+ # Setting `BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN` environment variable can
  # force it to do mobile build with host toolchain - which is useful for testing
  # purpose.
- if(ANDROID OR IOS OR DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
+-if(ANDROID OR IOS OR DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
 -  set(INTERN_BUILD_MOBILE ON)
-+  #set(INTERN_BUILD_MOBILE ON)
+-
+-  if(DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
+-    # C10_MOBILE is derived from Android/iOS toolchain macros in
+-    # c10/macros/Macros.h, so it needs to be explicitly set here.
+-    string(APPEND CMAKE_CXX_FLAGS " -DC10_MOBILE")
+-  endif()
+-endif()
++#if(ANDROID OR IOS OR DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
++#  set(INTERN_BUILD_MOBILE ON)
++#
++#  if(DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
++#    # C10_MOBILE is derived from Android/iOS toolchain macros in
++#    # c10/macros/Macros.h, so it needs to be explicitly set here.
++#    string(APPEND CMAKE_CXX_FLAGS " -DC10_MOBILE")
++#  endif()
++#endif()
  
-   if(DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
-     # C10_MOBILE is derived from Android/iOS toolchain macros in
+ # INTERN_BUILD_ATEN_OPS is used to control whether to build ATen/TH operators.
+ # It's disabled for caffe2 mobile library.
+diff --git a/c10/macros/Macros.h b/c10/macros/Macros.h
+index 8706181f30..32fdf5f201 100644
+--- a/c10/macros/Macros.h
++++ b/c10/macros/Macros.h
+@@ -376,12 +376,12 @@ __host__ __device__
+ 
+ #if defined(__ANDROID__)
+ #define C10_ANDROID 1
+-#define C10_MOBILE 1
++//#define C10_MOBILE 1
+ #elif (                   \
+     defined(__APPLE__) && \
+     (TARGET_IPHONE_SIMULATOR || TARGET_OS_SIMULATOR || TARGET_OS_IPHONE))
+ #define C10_IOS 1
+-#define C10_MOBILE 1
++//#define C10_MOBILE 1
+ #endif // ANDROID / IOS
+ 
+ // Portable determination of whether type T is trivially copyable.
 diff --git a/cmake/ProtoBuf.cmake b/cmake/ProtoBuf.cmake
 index 8d7633c4ab..2d859461d4 100644
 --- a/cmake/ProtoBuf.cmake
