@@ -79,3 +79,13 @@ termux_step_pre_configure() {
 		cp -v "$TERMUX_PKG_BUILDER_DIR"/vulkan_wrapper* "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
 	fi
 }
+
+termux_step_make() {
+	cd "$TERMUX_PKG_SRCDIR"
+	python${_PYTHON_MAJOR_VERSION} setup.py build
+}
+
+termux_step_make_install() {
+	cd "$TERMUX_PKG_SRCDIR"
+	MAX_JOBS=$TERMUX_MAKE_PROCESSES python${_PYTHON_MAJOR_VERSION} setup.py install
+}
