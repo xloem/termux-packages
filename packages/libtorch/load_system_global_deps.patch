@@ -1,0 +1,21 @@
+diff --git a/torch/__init__.py b/torch/__init__.py
+index abd8c1f..09bc6cd 100644
+--- a/torch/__init__.py
++++ b/torch/__init__.py
+@@ -143,10 +143,12 @@ def _load_global_deps():
+         return
+ 
+     lib_name = 'libtorch_global_deps' + ('.dylib' if platform.system() == 'Darwin' else '.so')
+-    here = os.path.abspath(__file__)
+-    lib_path = os.path.join(os.path.dirname(here), 'lib', lib_name)
+-
+-    ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
++    try:
++        ctypes.CDLL(lib_name, mode=ctypes.RTLD_GLOBAL)
++    except:
++        here = os.path.abspath(__file__)
++        lib_path = os.path.join(os.path.dirname(here), 'lib', lib_name)
++        ctypes.CDLL(lib_path, mode=ctypes.RTLD_GLOBAL)
+ 
+ 
+ if (USE_RTLD_GLOBAL_WITH_LIBTORCH or os.getenv('TORCH_USE_RTLD_GLOBAL')) and \
