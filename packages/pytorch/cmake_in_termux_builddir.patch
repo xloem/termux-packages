@@ -1,0 +1,13 @@
+diff --git a/setup.py b/setup.py
+index 6d9ed53dc6..b118c958e2 100644
+--- a/setup.py
++++ b/setup.py
+@@ -306,7 +306,7 @@ package_name = os.getenv('TORCH_PACKAGE_NAME', 'torch')
+ version = get_torch_version()
+ report("Building wheel {}-{}".format(package_name, version))
+ 
+-cmake = CMake()
++cmake = CMake(os.environ.get("TERMUX_PKG_BUILDDIR", "build"))
+ 
+ 
+ def get_submodule_folders():
