@@ -82,6 +82,7 @@ termux_step_pre_configure() {
 
 termux_step_make() {
 	cd "$TERMUX_PKG_SRCDIR"
+	# This basically just calls CMake
 	python${_PYTHON_MAJOR_VERSION} setup.py build
 }
 
