@@ -13,6 +13,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DBUILD_TEST=OFF
 -DBUILD_PYTHON=ON
 -DCMAKE_PREFIX_PATH=$PREFIX/lib/python${_PYTHON_MAJOR_VERSION}/site-packages
+-DCMAKE_INSTALL_PREFIX=$TERMUX_PKG_SRCDIR/torch
 -DBUILD_CUSTOM_PROTOBUF=OFF
 -DUSE_CCACHE=OFF
 -DUSE_FFMPEG=ON
@@ -90,5 +91,6 @@ termux_step_make() {
 
 termux_step_make_install() {
 	cd "$TERMUX_PKG_SRCDIR"
+	# setup.py presently looks for libs to bundle cmake installs into srcdir/torch
 	MAX_JOBS=$TERMUX_MAKE_PROCESSES python${_PYTHON_MAJOR_VERSION} setup.py install
 }
