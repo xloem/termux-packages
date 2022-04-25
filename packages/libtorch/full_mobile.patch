@@ -1,12 +1,11 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0c11507838..8aa6822bbb 100644
+index e51760b5ae..f0772905f7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -527,15 +527,15 @@ endif(NOT MSVC)
- # Setting `BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN` environment variable can
+@@ -536,13 +536,13 @@ endif(NOT MSVC)
  # force it to do mobile build with host toolchain - which is useful for testing
  # purpose.
--if(ANDROID OR IOS OR DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
+ if(ANDROID OR IOS OR DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
 -  set(INTERN_BUILD_MOBILE ON)
 -
 -  if(DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
@@ -14,24 +13,21 @@ index 0c11507838..8aa6822bbb 100644
 -    # c10/macros/Macros.h, so it needs to be explicitly set here.
 -    string(APPEND CMAKE_CXX_FLAGS " -DC10_MOBILE")
 -  endif()
--endif()
-+#if(ANDROID OR IOS OR DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
-+#  set(INTERN_BUILD_MOBILE ON)
-+#
-+#  if(DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
-+#    # C10_MOBILE is derived from Android/iOS toolchain macros in
-+#    # c10/macros/Macros.h, so it needs to be explicitly set here.
-+#    string(APPEND CMAKE_CXX_FLAGS " -DC10_MOBILE")
-+#  endif()
-+#endif()
++  #set(INTERN_BUILD_MOBILE ON)
++  #
++  #if(DEFINED ENV{BUILD_PYTORCH_MOBILE_WITH_HOST_TOOLCHAIN})
++  #  # C10_MOBILE is derived from Android/iOS toolchain macros in
++  #  # c10/macros/Macros.h, so it needs to be explicitly set here.
++  #  string(APPEND CMAKE_CXX_FLAGS " -DC10_MOBILE")
++  #endif()
  
- # INTERN_BUILD_ATEN_OPS is used to control whether to build ATen/TH operators.
- # It's disabled for caffe2 mobile library.
+   if(DEFINED ENV{PYTORCH_MOBILE_TRIM_DISPATCH_KEY_SET})
+     # If PYTORCH_MOBILE_TRIM_DISPATCH_KEY_SET is defined (env var),
 diff --git a/c10/macros/Macros.h b/c10/macros/Macros.h
-index 8706181f30..32fdf5f201 100644
+index 28dc1df943..1de35c3163 100644
 --- a/c10/macros/Macros.h
 +++ b/c10/macros/Macros.h
-@@ -376,12 +376,12 @@ __host__ __device__
+@@ -393,12 +393,12 @@ __host__ __device__
  
  #if defined(__ANDROID__)
  #define C10_ANDROID 1
