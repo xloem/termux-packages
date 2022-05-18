@@ -8,7 +8,7 @@ TERMUX_PKG_SRCURL=https://github.com/pytorch/pytorch/releases/download/v${TERMUX
 TERMUX_PKG_SHA256=dc0c2b8d13c112a2b9ea8757a475b0ce2ca97cd19c50a8b70b8c286676616f1d
 # note: these dependencies are all optional
 TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,opencv,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
-_PYTHON_MAJOR_VERSION="$(. $TERMUX_SCRIPTDIR/packages/python/build.sh; echo ${TERMUX_PKG_VERSION%.*})" # 3.10 at time of writing
+TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DBUILD_TEST=OFF
 -DBUILD_PYTHON=ON
@@ -24,21 +24,15 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DANDROID_NDK=$NDK
 -DANDROID_NDK_HOST_SYSTEM_NAME=linux-$HOSTTYPE
 -DNATIVE_BUILD_DIR=$TERMUX_PKG_HOSTBUILD_DIR/sleef
--DPYTHON_EXECUTABLE=$(which python${_PYTHON_MAJOR_VERSION})
--DPYTHON_INCLUDE_DIR=$PREFIX/include/python${_PYTHON_MAJOR_VERSION}
--DPYTHON_LIBRARY=$PREFIX/lib/libpython${_PYTHON_MAJOR_VERSION}.so.1.0
--DPYTHONLIBS_FOUND=ON
--DPYTHONLIBS_VERSION_STRING=${_PYTHON_MAJOR_VERSION}
--DPYTHON_LIB_REL_PATH=lib/python${_PYTHON_MAJOR_VERSION}/site-packages
 "
-if $TERMUX_ON_DEVICE_BUILD
-then
-	TERMUX_PKG_EXTRA_CONFIGURE_ARGS="$TERMUX_PKG_EXTRA_CONFIGURE_ARGS -DUSE_VULKAN=OFF"
-else
-	TERMUX_PKG_HOSTBUILD=true
-fi
 
 termux_step_host_build() {
+	if $TERMUX_ON_DEVICE_BUILD
+	then
+		return
+	fi
+
+	# TODO? opencv uses a protobuf script for this
 	# use the protoc build script from pytorch to build the protoc from termux so the header versions align
 	local PYTORCH_HOSTBUILD_DIR="$TERMUX_PKG_HOSTBUILD_DIR"
 	(
@@ -70,21 +64,48 @@ termux_step_host_build() {
 }
 
 termux_step_pre_configure() {
+	# For Python bindings
+	_PYTHON_VERSION=$(. $TERMUX_SCRIPTDIR/packages/python/build.sh; echo $_MAJOR_VERSION)
+	termux_setup_python_crossenv
+	pushd $TERMUX_PYTHON_CROSSENV_SRCDIR
+	_CROSSENV_PREFIX=$TERMUX_PKG_BUILDDIR/python-crossenv-prefix
+	python${_PYTHON_VERSION} -m crossenv \
+		$TERMUX_PREFIX/bin/python${_PYTHON_VERSION} \
+		${_CROSSENV_PREFIX}
+	popd
+	. ${_CROSSENV_PREFIX}/bin/activate
+
 	# install host python libs
-	python${_PYTHON_MAJOR_VERSION} -m pip install dataclasses typing_extensions
+	#python${_PYTHON_VERSION} -m pip install --upgrade pip
+	#python${_PYTHON_VERSION} -m pip install pyyaml dataclasses typing_extensions --upgrade setuptools
+	#python${_PYTHON_VERSION} -m pip install pyyaml dataclasses typing_extensions
+	#build-pip install --upgrade setuptools pkg_resources
+	build-pip install pyyaml dataclasses typing_extensions #--upgrade setuptools wheel
+	#rm ${_CROSSENV_PREFIX}/*/lib/python${_PYTHON_VERSION}/site-packages/setuptools/command/bdist_wininst.py
+	#mkdir -p ${_CROSSENV_PREFIX}/build/lib/python${_PYTHON_VERSION}/site-packages/distutils/command/
+	#touch ${_CROSSENV_PREFIX}/build/lib/python${_PYTHON_VERSION}/site-packages/distutils/command/bdist_wininst.py
 
 	# install target numpy if available
 	# numpy binary packages appear to be only available for 64 bit archs
 	# it might work to put a host numpy here and rely on the device loader to load the real thing; untested
-	if python${_PYTHON_MAJOR_VERSION} -m pip install --platform manylinux2014_${TERMUX_ARCH} --only-binary=:all: --target="$PREFIX/lib/python${_PYTHON_MAJOR_VERSION}/site-packages" numpy; then
-		TERMUX_PKG_EXTRA_CONFIGURE_ARGS="$TERMUX_PKG_EXTRA_CONFIGURE_ARGS
-		-DNUMPY_INCLUDE_DIR=$PREFIX/lib/python${_PYTHON_MAJOR_VERSION}/site-packages/numpy/core/include
+	if python${_PYTHON_VERSION} -m pip install --platform manylinux2014_${TERMUX_ARCH} --only-binary=:all: --target="$PREFIX/lib/python${_PYTHON_VERSION}/site-packages" numpy; then
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+="
+		-DNUMPY_INCLUDE_DIR=$PREFIX/lib/python${_PYTHON_VERSION}/site-packages/numpy/core/include
 		-DUSE_NUMPY=ON
 		"
 	fi
+	TERMUX_PKG_EXTRA_CONFIGURE_ARGS+="
+	-DPYTHON_EXECUTABLE=$(which python${_PYTHON_VERSION})
+	-DPYTHON_INCLUDE_DIR=$TERMUX_PREFIX/include/python${_PYTHON_VERSION}
+	-DPYTHON_LIBRARY=$TERMUX_PREFIX/lib/libpython${_PYTHON_VERSION}.so.1.0
+	-DPYTHONLIBS_FOUND=ON
+	-DPYTHONLIBS_VERSION_STRING=${_PYTHON_VERSION}
+	-DPYTHON_LIB_REL_PATH=lib/python${_PYTHON_VERSION}/site-packages"
 
-	if ! $TERMUX_ON_DEVICE_BUILD
+	if $TERMUX_ON_DEVICE_BUILD
 	then
+		TERMUX_PKG_EXTRA_CONFIGURE_ARGS+=" -DUSE_VULKAN=OFF"
+	else
 		# ensure vulkan wrappers are present
 		local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
 		mkdir -p "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
@@ -92,14 +113,22 @@ termux_step_pre_configure() {
 	fi
 }
 
+
 termux_step_make() {
+	if $TERMUX_CONTINUE_BUILD
+	then
+		_PYTHON_VERSION=$(. $TERMUX_SCRIPTDIR/packages/python/build.sh; echo $_MAJOR_VERSION)
+		_CROSSENV_PREFIX=$TERMUX_PKG_BUILDDIR/python-crossenv-prefix
+		. ${_CROSSENV_PREFIX}/bin/activate
+	fi
+
 	cd "$TERMUX_PKG_SRCDIR"
 	# This basically just calls CMake
 	export TERMUX_PKG_BUILDDIR
-	python${_PYTHON_MAJOR_VERSION} setup.py build
+	MAX_JOBS=$TERMUX_MAKE_PROCESSES python setup.py build
 }
 
 termux_step_make_install() {
 	cd "$TERMUX_PKG_SRCDIR"
-	MAX_JOBS=$TERMUX_MAKE_PROCESSES python${_PYTHON_MAJOR_VERSION} setup.py install
+	MAX_JOBS=$TERMUX_MAKE_PROCESSES python setup.py install
 }
