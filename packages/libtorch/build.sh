@@ -3,11 +3,12 @@ TERMUX_PKG_DESCRIPTION='Tensors and Dynamic neural networks'
 TERMUX_PKG_LICENSE=non-free
 TERMUX_PKG_LICENSE_FILE=LICENSE
 TERMUX_PKG_MAINTAINER='@termux'
-TERMUX_PKG_VERSION=1.11.0
+TERMUX_PKG_VERSION=1.12.0
 TERMUX_PKG_SRCURL=https://github.com/pytorch/pytorch/releases/download/v${TERMUX_PKG_VERSION}/pytorch-v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=dc0c2b8d13c112a2b9ea8757a475b0ce2ca97cd19c50a8b70b8c286676616f1d
+TERMUX_PKG_SHA256=46eff236370b759c427b03ff535c3597099043e8e467b8f81f9cd4b258a7a321
 # note: these dependencies are all optional
-TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,opencv,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
+#TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,opencv,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
+TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DBUILD_TEST=OFF
@@ -74,6 +75,10 @@ termux_step_pre_configure() {
 		${_CROSSENV_PREFIX}
 	popd
 	. ${_CROSSENV_PREFIX}/bin/activate
+
+	pushd ${_CROSSENV_PREFIX}/build/lib/python${_PYTHON_VERSION}/site-packages 
+	patch --silent -p1 < $TERMUX_PKG_BUILDER_DIR/setuptools-44.1.1-no-bdist_wininst.diff || : 
+	popd 
 
 	# install host python libs
 	#python${_PYTHON_VERSION} -m pip install --upgrade pip
