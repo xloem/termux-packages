@@ -1,0 +1,13 @@
+diff --git a/torch/csrc/init_flatbuffer_module.cpp b/torch/csrc/init_flatbuffer_module.cpp
+index 1f29148d72..eca86bf8dd 100644
+--- a/torch/csrc/init_flatbuffer_module.cpp
++++ b/torch/csrc/init_flatbuffer_module.cpp
+@@ -27,7 +27,7 @@ static std::shared_ptr<char> copyStr(const std::string& bytes) {
+   std::shared_ptr<char> bytes_copy(
+       static_cast<char*>(_aligned_malloc(size, FLATBUFFERS_MAX_ALIGNMENT)),
+       _aligned_free);
+-#elif defined(__APPLE__)
++#elif defined(__APPLE__) || !defined(_GLIBCXX_HAVE_ALIGNED_ALLOC)
+   void* p;
+   ::posix_memalign(&p, FLATBUFFERS_MAX_ALIGNMENT, size);
+   TORCH_INTERNAL_ASSERT(p, "Could not allocate memory for flatbuffer");
