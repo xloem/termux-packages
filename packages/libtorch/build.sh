@@ -7,8 +7,7 @@ TERMUX_PKG_VERSION=1.12.0
 TERMUX_PKG_SRCURL=https://github.com/pytorch/pytorch/releases/download/v${TERMUX_PKG_VERSION}/pytorch-v${TERMUX_PKG_VERSION}.tar.gz
 TERMUX_PKG_SHA256=46eff236370b759c427b03ff535c3597099043e8e467b8f81f9cd4b258a7a321
 # note: these dependencies are all optional
-#TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,opencv,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
-TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
+TERMUX_PKG_BUILD_DEPENDS=python,zstd,libprotobuf,fmt,eigen,valgrind,opencv,gflags,liblmdb,leveldb,openmpi,fftw,ffmpeg
 TERMUX_PKG_HOSTBUILD=true
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DBUILD_TEST=OFF
@@ -115,6 +114,10 @@ termux_step_pre_configure() {
 		local VULKAN_ANDROID_NDK_WRAPPER_DIR="$NDK/sources/third_party/vulkan/src/common"
 		mkdir -p "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
 		cp -v "$TERMUX_PKG_BUILDER_DIR"/vulkan_wrapper* "$VULKAN_ANDROID_NDK_WRAPPER_DIR"
+
+		# workaround for not finding asm/types.h on arm
+		# https://stackoverflow.com/questions/44793617/android-ndk-error-asm-types-h-not-found
+		CFLAGS+=" -isystem $TERMUX_STANDALONE_TOOLCHAIN/sysroot/usr/include/arm-linux-androideabi"
 	fi
 }
 
