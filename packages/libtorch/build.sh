@@ -117,7 +117,7 @@ termux_step_pre_configure() {
 
 		# workaround for not finding asm/types.h on arm
 		# https://stackoverflow.com/questions/44793617/android-ndk-error-asm-types-h-not-found
-		CFLAGS+=" -isystem $TERMUX_STANDALONE_TOOLCHAIN/sysroot/usr/include/arm-linux-androideabi"
+		CFLAGS+=" -isystem $TERMUX_STANDALONE_TOOLCHAIN/sysroot/usr/include/$TERMUX_HOST_PLATFORM"
 	fi
 }
 
