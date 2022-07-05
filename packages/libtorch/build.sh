@@ -138,5 +138,5 @@ termux_step_make() {
 
 termux_step_make_install() {
 	cd "$TERMUX_PKG_SRCDIR"
-	MAX_JOBS=$TERMUX_MAKE_PROCESSES python setup.py install
+	MAX_JOBS=$TERMUX_MAKE_PROCESSES python setup.py install --prefix $TERMUX_PREFIX
 }
